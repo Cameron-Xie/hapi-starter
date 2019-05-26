@@ -1,0 +1,33 @@
+version: '3'
+services:
+  node:
+    container_name: acme_node
+    build:
+      context: ./docker/node
+    volumes:
+      - './:/var/www/app'
+    working_dir: '/var/www/app'
+    command: ['/bin/sh', '-c', 'tail -f /dev/null']
+    env_file:
+      - .env
+    environment:
+      - API_HOST=${API_HOST}
+      - API_PORT=${API_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${API_HOST}:${API_PORT}:8080
+    restart: always
+  postgres:
+    container_name: acme_postgres
+    image: postgres:11-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 5432:5432
